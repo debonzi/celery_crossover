@@ -8,11 +8,20 @@ def build_callback(task):
     return "{0}/{1}".format(task.app.conf.broker_url, posixpath.join(task.name, queue))
 
 
+def reply_callback(func):
+    def wrapped(*args, **kwargs):
+        _callback = kwargs['callback']
+        del(kwargs['callback'])
+        res = func(**kwargs)
+        CallBack(_callback)(result=res)
+    return wrapped
+
+
 class CallBack(object):
     def __init__(self, url):
         self.url = url
 
-    def __call__(self, url, **kwargs):
+    def __call__(self, **kwargs):
         requests.post(self.url, json=kwargs)
 
 
