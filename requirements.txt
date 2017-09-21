@@ -1,0 +1,2 @@
+celery[redis]==4.1.0
+-e git+https://github.com/debonzi/requests-celery-adapter@api-change#egg=rca
