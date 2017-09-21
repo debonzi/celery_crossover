@@ -6,11 +6,14 @@ import crossover
 
 logger = get_task_logger(__name__)
 
-app = Celery('tasks', broker='redis://localhost:6379/0')
+app = Celery('tasks')
+app.config_from_object('examples.project_1.celery_conf')
+
+crossover.register_router(app)
 
 
-@app.task(name='crossover.plus')
-@crossover.reply_callback
+@app.task(name='plus', queue='project_1')
+@crossover.exposed
 def plus(x, y):
     _add = x + y
     logger.info('Addition {0} + {1} = {2}'.format(x, y, _add))
