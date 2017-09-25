@@ -45,7 +45,7 @@ def exposed(func):
         if 'callback' in kwargs:
             _callback = kwargs.pop('callback')
             res = func(**kwargs)
-            CallBack(_callback)(result=res)
+            return CallBack(_callback)(result=res)
         func(**kwargs)
     return wrapped
 
