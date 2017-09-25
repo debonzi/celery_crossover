@@ -1,2 +1,2 @@
 celery[redis]==4.1.0
--e git+https://github.com/debonzi/requests-celery-adapter@783b6e17deb1fc61c0ac85fdb34c56b040ed9c71#egg=rca
+requests-celery-adapters==2.0.1

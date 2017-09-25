@@ -130,13 +130,13 @@ def plus_callback(result):
  * exec_task_on_alice.py 
 ```python
 # -*- encoding: utf-8 -*-
-from crossover import Client, build_callback
+from crossover import Client
 from bob import plus_callback
 
 alice_broker = "redis://localhost:6379/0"
 alice_client = Client(broker=alice_broker)
 
-alice_client.plus(x=340, y=210, callback=build_callback(plus_callback))
+alice_client.plus(x=340, y=210, callback=plus_callback)
 
 ```
 

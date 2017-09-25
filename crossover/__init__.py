@@ -1,6 +1,5 @@
 # -*- encoding: utf-8 -*-
 import celery
-import posixpath
 from celery.utils.log import get_task_logger
 from kombu import Exchange, Queue
 
@@ -34,7 +33,7 @@ def register_router(celery_app):
         celery_app.conf.task_queues = [queue]
 
 
-def build_callback(task):
+def _build_callback(task):
     return {
         'broker': task.app.conf.broker_url,
         'task': task.name
@@ -61,11 +60,13 @@ class CallBack(object):
 
 class _Requester(object):
     def __init__(self, broker, remote_task_name, task=CROSSOVER_ROUTER_NAME, queue=CROSSOVER_QUEUE):
-        self.url = "{0}/{1}".format(broker, posixpath.join(task, queue))
+        self.url = "{0}/{1}#{2}".format(broker, task, queue)
         self.remote_task_name = remote_task_name
 
     def __call__(self, *args, **kwargs):
         kwargs['task_name'] = self.remote_task_name
+        if 'callback' in kwargs:
+            kwargs['callback'] = _build_callback(kwargs['callback'])
         requests.post(self.url, json=kwargs)
 
 
