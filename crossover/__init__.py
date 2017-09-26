@@ -42,27 +42,33 @@ def _build_callback(task):
 
 def callback(auto_callback=False, bind_callback_meta=False):
     def _executor(func):
-        def wrapped(*args, **kwargs):
+        def wrapped(**kwargs):
             if 'callback' in kwargs:
                 _callback = kwargs.pop('callback')
                 if auto_callback:
-                    return CallBack(_callback)(result=func(**kwargs))
+                    CallBack(_callback)(result=func(**kwargs))
                 elif bind_callback_meta:
                     func(_callback, **kwargs)
                 else:
                     func(**kwargs)
                 return
-            func(**kwargs)
+            if bind_callback_meta:  # and not 'callback' in kwargs
+                func(None, **kwargs)
+            else:
+                func(**kwargs)
         return wrapped
     return _executor
 
 
 class CallBack(object):
     def __init__(self, callback_data):
-        self.requester = _Requester(callback_data.get('broker'), callback_data.get('task'))
+        self.requester = None
+        if callback_data:
+            self.requester = _Requester(callback_data.get('broker'), callback_data.get('task'))
 
     def __call__(self, *args, **kwargs):
-        self.requester(*args, **kwargs)
+        if self.requester:
+            self.requester(*args, **kwargs)
 
 
 class _Requester(object):
