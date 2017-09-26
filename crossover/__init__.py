@@ -40,14 +40,21 @@ def _build_callback(task):
     }
 
 
-def exposed(func):
-    def wrapped(*args, **kwargs):
-        if 'callback' in kwargs:
-            _callback = kwargs.pop('callback')
-            res = func(**kwargs)
-            return CallBack(_callback)(result=res)
-        func(**kwargs)
-    return wrapped
+def callback(auto_callback=False, bind_callback_meta=False):
+    def _executor(func):
+        def wrapped(*args, **kwargs):
+            if 'callback' in kwargs:
+                _callback = kwargs.pop('callback')
+                if auto_callback:
+                    return CallBack(_callback)(result=func(**kwargs))
+                elif bind_callback_meta:
+                    func(_callback, **kwargs)
+                else:
+                    func(**kwargs)
+                return
+            func(**kwargs)
+        return wrapped
+    return _executor
 
 
 class CallBack(object):

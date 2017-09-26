@@ -15,3 +15,8 @@ crossover.register_router(app)
 @app.task(name='plus_callback', queue='project_2')
 def plus_callback(result):
     logger.info('Got Addition callback = {0}'.format(result))
+
+
+@app.task(name='times_callback', queue='project_2')
+def times_callback(result):
+    logger.info('Got Multiplication callback = {0}'.format(result))

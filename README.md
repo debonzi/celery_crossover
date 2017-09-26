@@ -56,9 +56,9 @@ alice_client.plus(x=340, y=210)
 
 ```
 
-### 2) Alice task execution triggered by Bob with callback
-In the same scenario discribed above, lets suppose Bob need to be notified (have a task executed) after Alice is done with the ```plus``` task.
-For this case, all we have to do is decorate the Alice's task ```plus``` with```@crossover.exposed``` to have its returned value sent back to Bob. Also, Bob have to define and send to Alice a task to be called by Alice's callback.
+### 2) Alice task execution triggered by Bob with callback (Auto Callback)
+In the same scenario described above, lets suppose Bob need to be notified (have a task executed) after Alice is done with the ```plus``` task.
+For this case, all we have to do is decorate the Alice's task ```plus``` with```@crossover.callback(auto_callback=True)``` to have its returned value sent back to Bob. Also, Bob have to define and send to Alice a task to be called by Alice's callback.
 That way, Alice and Bob could would be:
 
 #### Alice:
@@ -87,7 +87,7 @@ crossover.register_router(app)
 
 
 @app.task(name='plus', queue='alice_queue')
-@crossover.exposed
+@crossover.callback(auto_callback=True)
 def plus(x, y):
     _add = x + y
     return _add
@@ -140,3 +140,28 @@ alice_client.plus(x=340, y=210, callback=plus_callback)
 
 ```
 
+### 3) Alice task execution triggered by Bob with callback (No Auto Callback)
+In this case, everything is the same as 2) from Bob's perspective but lets suppose Alice's task cant calculate or
+determine a response right away so it needs to pass (or persist) the callback metadata for further execution.
+It can be done by using de decorator ```@crossover.callback``` with ```bind_callback_meta=True``` which will give
+to the task function the callback metadata as its first parameters. Following an example of its usage:
+
+ * alice.py
+
+```python
+# -*- encoding: utf-8 -*-
+...
+
+@app.task(name='plus', queue='alice_queue')
+@crossover.callback(bind_callback_meta=True)
+def plus(callback_meta, x, y):
+    logger.info('Execution actual addition task.')
+    calculate_addition.delay(callback_meta, x, y):
+
+
+@app.task(name='calculate_addition', queue='project_1')
+def calculate_addition(callback_meta, x, y):
+    _add = x + y
+    logger.info('Addition {0} + {1} = {2}'.format(x, y, _add))
+    crossover.CallBack(callback_meta)(result=_add)
+```
