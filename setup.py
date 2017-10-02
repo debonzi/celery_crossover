@@ -17,7 +17,7 @@ extras_require = {
 
 
 setup(name='celery-crossover',
-      version='1.1.0',
+      version='1.1.2',
       description='Celery Crossover aims to make it really easy to execute tasks in another service.',
       author='Daniel Debonzi',
       author_email='debonzi@gmail.com',
