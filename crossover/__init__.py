@@ -61,20 +61,22 @@ def _build_callback(task):
 
 def callback(auto_callback=False, bind_callback_meta=False):
     def _executor(func):
-        def wrapped(**kwargs):
+        def wrapped(*args, **kwargs):
             if 'callback' in kwargs:
                 _callback = kwargs.pop('callback')
                 if auto_callback:
-                    CallBack(_callback)(result=func(**kwargs))
+                    CallBack(_callback)(result=func(*args, **kwargs))
                 elif bind_callback_meta:
-                    func(_callback, **kwargs)
+                    kwargs.update({"callback_meta": _callback})
+                    func(*args, **kwargs)
                 else:
-                    func(**kwargs)
+                    func(*args, **kwargs)
                 return
             if bind_callback_meta:  # and not 'callback' in kwargs
-                func(None, **kwargs)
+                kwargs.update({"callback_meta": None})
+                func(*args, **kwargs)
             else:
-                func(**kwargs)
+                func(args, **kwargs)
         return wrapped
     return _executor
 
