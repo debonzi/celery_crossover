@@ -4,8 +4,8 @@
 from setuptools import setup
 
 requires = [
-    'celery[redis]==4.1.0',
-    'requests-celery-adapters==2.0.4',
+    'celery[redis]>=3.1.20',
+    'requests-celery-adapters>=2.0.6',
     'six>=1.11.0'
             ]
 
@@ -17,7 +17,7 @@ extras_require = {
 
 
 setup(name='celery-crossover',
-      version='1.1.2',
+      version='1.1.3',
       description='Celery Crossover aims to make it really easy to execute tasks in another service.',
       author='Daniel Debonzi',
       author_email='debonzi@gmail.com',
