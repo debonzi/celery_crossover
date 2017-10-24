@@ -17,25 +17,44 @@ class CrossoverRouter(celery.Task):
     def run(self, *args, **kwargs):
         task_name = kwargs.pop('task_name')
         logger.debug('Got Crossover task: {}'.format(task_name))
-        _task = self.app.tasks.get(task_name)
+        _task = celery.current_app.tasks.get(task_name)
         if not _task:
             logger.error('Task {0} not found!'.format(task_name))
             return
         return _task.delay(*args, **kwargs)
 
 
-def register_router(celery_app):
-    celery_app.tasks.register(CrossoverRouter)
-    queue = Queue(CROSSOVER_QUEUE, Exchange(CROSSOVER_QUEUE), routing_key=CROSSOVER_QUEUE)
+def _register_celery_3(celery_app, queue):
+    if celery_app.conf.CELERY_QUEUES:
+        celery_app.conf.CELERY_QUEUES.append(queue)
+    else:
+        celery_app.conf.CELERY_QUEUES = [queue]
+
+
+def _register_celery_4(celery_app, queue):
     if celery_app.conf.task_queues:
         celery_app.conf.task_queues.append(queue)
     else:
         celery_app.conf.task_queues = [queue]
 
 
+def register_router(celery_app):
+    celery_app.tasks.register(CrossoverRouter)
+    queue = Queue(CROSSOVER_QUEUE, Exchange(CROSSOVER_QUEUE), routing_key=CROSSOVER_QUEUE)
+    if not hasattr(celery_app.conf, 'task_queues'):  # Celery 3
+        _register_celery_3(celery_app=celery_app, queue=queue)
+    else:                                            # Celery 4
+        _register_celery_4(celery_app=celery_app, queue=queue)
+
+
 def _build_callback(task):
+    if not hasattr(task.app.conf, 'broker_url'):  # Celery 3
+        broker_url = task.app.conf.BROKER_URL
+    else:                                         # Celery 4
+        broker_url = task.app.conf.broker_url
+
     return {
-        'broker': task.app.conf.broker_url,
+        'broker': broker_url,
         'task': task.name
     }
 
