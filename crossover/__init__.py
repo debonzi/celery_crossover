@@ -108,5 +108,9 @@ class Client(object):
     def __init__(self, broker):
         self.broker = broker
 
+    def call_task(self, remote_task_name, *args, **kwargs):
+        req = _Requester(self.broker, remote_task_name)
+        req(*args, **kwargs)
+
     def __getattr__(self, item):
         return _Requester(self.broker, item)
