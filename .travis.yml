@@ -1,0 +1,15 @@
+language: python
+python:
+- '2.7'
+- '3.5'
+- '3.6'
+install:
+- pip install -e .
+deploy:
+  provider: pypi
+  user: debonzi
+  password:
+    secure: YEdRQ2TOrhfo4UESeWMCfFKl6uhQuyic6ccQrz7Oy1EUmO9Gzguveb0v9amlkaYd7js8OuhrZSyMM3NyePviVXxJux1nucmAaqDULmezPxlVeIV4Uh1rWpjB969gm052rgqAHegYWFrm4yI9zZfs97UEJgb1yNrqGxUiyEnTNAvfz+GdireIYTm7CAWy527YsyEYgN+ek3snLT7+Q5QysScbEPiyK9wCOrs66m2i6xwz44+s2DTQYcINmQfKc/VQrcf6fugEwA00jM7cY+26a9L1L/2sRkvEOLaLWDDn7AEXKPsc7+NPkTRzQxAZBD7AAQZKwFe9cesKrF3GubDL0+26n4bxWqypWSt6NEJGhgJx4qhBt8zzp1a7TWd9tQ+z3epXitOilNcTkN2tRWBvJTX9Gttj7Q8f776FgF8alU0FptpbI/oh+BmfAgPJUCHfQKWMZFsr5vdsZ+Y85q6XSneJXMS+DqgSOewNiT9dfEY8GZBMQR5rbVsjl/aB5PIpf/Le41puzs/CyRwVKRkckZzinxzr57MTW+0zgdSjNb7jYzGyMIyniJBvtM4h3v7RowBZr3xCXXlv2GW1fBAUaTm24dwh5RKbwfhP6vw12bnR01ew+uQaAmLX+Yw0lViEqI2H5DUiY+su111xDmrYILqL0lJoOxnoa6cHuMVjjpY=
+  on:
+    tags: true
+    branch: master

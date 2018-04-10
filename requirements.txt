@@ -1,2 +1,0 @@
-celery[redis]==4.1.0
-requests-celery-adapters==2.0.1
