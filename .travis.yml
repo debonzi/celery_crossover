@@ -6,7 +6,7 @@ python:
 install:
   - pip install -e .[test,ci]
 script:
-  - pytest --cov=crossover
+  - pytest --cov=crossover --cov-report annotate
 deploy:
   provider: pypi
   user: debonzi
