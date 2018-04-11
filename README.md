@@ -1,3 +1,8 @@
+[![Build Status](https://travis-ci.org/debonzi/celery_crossover.svg?branch=master)](https://travis-ci.org/debonzi/celery_crossover)
+[![PyPI](https://img.shields.io/pypi/v/celery_crossover.svg)](https://github.com/debonzi/celery_crossover)
+[![PyPI](https://img.shields.io/pypi/pyversions/celery_crossover.svg)](https://github.com/debonzi/celery_crossover)
+[![Coverage Status](https://coveralls.io/repos/github/debonzi/celery_crossover/badge.svg)](https://coveralls.io/github/debonzi/celery_crossover)
+
 # Celery Crossover (Alpha)
 
 ## About
