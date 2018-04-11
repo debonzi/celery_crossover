@@ -12,8 +12,11 @@ requires = [
 extras_require = {
     'test': [
         'pytest',
-        'pytest-cov'
+        'pytest-cov',
     ],
+    'ci': [
+        'python-coveralls',
+    ]
 }
 
 
