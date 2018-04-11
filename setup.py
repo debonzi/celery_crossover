@@ -11,7 +11,8 @@ requires = [
 
 extras_require = {
     'test': [
-        'pytest>=3.2.2'
+        'pytest',
+        'pytest-cov'
     ],
 }
 

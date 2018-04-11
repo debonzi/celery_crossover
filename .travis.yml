@@ -6,7 +6,7 @@ python:
 install:
   - pip install -e .[test]
 script:
-  - pytest
+  - pytest --cov=crossover
 deploy:
   provider: pypi
   user: debonzi
@@ -16,3 +16,5 @@ deploy:
     tags: true
     branch: master
     python: '3.6'
+after_sucess:
+  - coveralls
