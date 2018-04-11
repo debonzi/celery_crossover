@@ -1,17 +1,17 @@
 language: python
 python:
-  - '2.7'
-  - '3.5'
-  - '3.6'
+- '2.7'
+- '3.5'
+- '3.6'
 install:
-  - pip install -e .[test]
+- pip install -e .[test]
 script:
-  - pytest
+- pytest
 deploy:
   provider: pypi
   user: debonzi
   password:
-    secure: YEdRQ2TOrhfo4UESeWMCfFKl6uhQuyic6ccQrz7Oy1EUmO9Gzguveb0v9amlkaYd7js8OuhrZSyMM3NyePviVXxJux1nucmAaqDULmezPxlVeIV4Uh1rWpjB969gm052rgqAHegYWFrm4yI9zZfs97UEJgb1yNrqGxUiyEnTNAvfz+GdireIYTm7CAWy527YsyEYgN+ek3snLT7+Q5QysScbEPiyK9wCOrs66m2i6xwz44+s2DTQYcINmQfKc/VQrcf6fugEwA00jM7cY+26a9L1L/2sRkvEOLaLWDDn7AEXKPsc7+NPkTRzQxAZBD7AAQZKwFe9cesKrF3GubDL0+26n4bxWqypWSt6NEJGhgJx4qhBt8zzp1a7TWd9tQ+z3epXitOilNcTkN2tRWBvJTX9Gttj7Q8f776FgF8alU0FptpbI/oh+BmfAgPJUCHfQKWMZFsr5vdsZ+Y85q6XSneJXMS+DqgSOewNiT9dfEY8GZBMQR5rbVsjl/aB5PIpf/Le41puzs/CyRwVKRkckZzinxzr57MTW+0zgdSjNb7jYzGyMIyniJBvtM4h3v7RowBZr3xCXXlv2GW1fBAUaTm24dwh5RKbwfhP6vw12bnR01ew+uQaAmLX+Yw0lViEqI2H5DUiY+su111xDmrYILqL0lJoOxnoa6cHuMVjjpY=
+    secure: AI6ZTz3fbnjxpMjgF5AHlL9P4W2MTJuN1jfEVyeYwIlQenDZr69Hf4zv/4N52CmqGV+CDOue3LC0B6BkGDzIf+aH8Az+/i87nN2ZcxrkSLuRknfOnHSyRZqBDM+RZG+aUbdWKXgXUYdqnXGUrD5sEPvtreUp/9m3bt0L3Bra/nzbZeE/yruJlFq2JIdeT+X+7JZgkfwYWrr0F/nRy11ePkwLfT3yFqKy4shXSQhyblFh2njJtdEuYnnFNGzB7mH1u0c+h60J1DsQk7kSArvDA0BaTnag7ZZHk8DpeNQVL094A/zX/ng6KoZNYSyDDResnn1MB58LIl2NlLVoPE4p8RVH1R5PtTPi6TV19EapugbFWDj6LQ/cWeHoay6SSZ5HjXjPWFCdOkny3HWTorfJdznREwSKpGX5A7XKjaOwDiiIQBqP8+DxbTadrDpYdHKoCPMPnoQGAKKTfAtNGi+a6Rxh1qDkpbTTWpDTQQJJnjuKKUuawnaB5gKu2z+dT0D+c5jU7QzudWl/xGontMy2+ZAwtTOFBe9ngj74TMAYJW8ydoublBX2plucXAdsHEMSFqnCyPlCwpqRTZSt+ScwqoUbSbHIh/Nn3ux156FtZFGSlO6U4wK293fe/C3j5FWmF48Su7YOe4zGAmEXWYp3QuXiaxGh/XmzW9FuHxMmIwg=
   on:
     tags: true
     branch: master
