@@ -11,16 +11,20 @@ CROSSOVER_QUEUE = '_crossover_router_queue.__dispatcher__'
 CROSSOVER_ROUTER_NAME = "__crossover_router_dispatch__"
 
 
+class TaskNotFoundError(Exception):
+    """ Raised when requested task is not found."""
+
 class CrossoverRouter(celery.Task):
+    CELERY_4_VERSION = celery.version_info_t(4, 0, 0, '', '')
     name = CROSSOVER_ROUTER_NAME
 
     def run(self, *args, **kwargs):
+        app = celery.current_app if celery.VERSION < self.CELERY_4_VERSION else self.app
         task_name = kwargs.pop('task_name')
         logger.debug('Got Crossover task: {}'.format(task_name))
-        _task = celery.current_app.tasks.get(task_name)
+        _task = app.tasks.get(task_name)
         if not _task:
-            logger.error('Task {0} not found!'.format(task_name))
-            return
+            raise TaskNotFoundError('Task "{0}" not found!'.format(task_name))
         return _task.delay(*args, **kwargs)
 
 
