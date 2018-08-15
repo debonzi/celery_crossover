@@ -34,7 +34,7 @@ import crossover
 from celery import Celery
 
 app = Celery('tasks')
-app.config_from_object('celery_conf')
+app.config_from_object('celery_config')
 
 # The line bellow will make Alice's Tasks usable by other services.
 crossover.register_router(app)
@@ -54,7 +54,7 @@ All that Bob need to do is:
 # -*- encoding: utf-8 -*-
 from crossover import Client
 
-alice_broker = "redis://localhost:6379/0"
+alice_broker = "redis://localhost:6379/1"
 alice_client = Client(broker=alice_broker)
 
 alice_client.plus(x=340, y=210)
@@ -85,7 +85,7 @@ import crossover
 from celery import Celery
 
 app = Celery('tasks')
-app.config_from_object('celery_conf')
+app.config_from_object('alice_celery_config')
 
 # The line bellow will make Alice's Tasks usable by other services.
 crossover.register_router(app)
@@ -105,7 +105,7 @@ def plus(x, y):
 # -*- coding: utf-8 -*-
 from kombu import Exchange, Queue
 
-BROKER_URL = 'redis://localhost:6379/0'
+BROKER_URL = 'redis://localhost:6379/1'
 
 CELERY_QUEUES = [
     Queue('bob_queue', Exchange('bob_queue'), routing_key='bob_queue')
@@ -138,7 +138,7 @@ def plus_callback(result):
 from crossover import Client
 from bob import plus_callback
 
-alice_broker = "redis://localhost:6379/0"
+alice_broker = "redis://localhost:6379/1"
 alice_client = Client(broker=alice_broker)
 
 alice_client.plus(x=340, y=210, callback=plus_callback)
