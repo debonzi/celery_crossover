@@ -8,7 +8,7 @@
 ## About
 Celery crossover aims to make it easier to execute celery tasks from a diffent source code base in the most simple and yet reliable way.
 
-![Use Case](https://github.com/debonzi/celery_crossover/blob/master/docs/CeleryCrossoverUseCase.png)
+![Use Case](docs/CeleryCrossoverUseCase.png)
 
 ## Quick Examples
 

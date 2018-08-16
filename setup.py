@@ -3,6 +3,22 @@
 
 from setuptools import setup
 
+def long_desc_img_replacer(long_desc):
+    replacements = (
+        (
+            '(docs/CeleryCrossoverUseCase.png)',
+            '(https://raw.githubusercontent.com/debonzi/celery_crossover/master/docs/CeleryCrossoverUseCase.png)'
+        ),
+    )
+    for f, t in replacements:
+        long_desc = long_desc.replace(f, t)
+    return long_desc
+
+
+with open('README.md') as f:
+    long_description = long_desc_img_replacer(f.read())
+
+
 requires = [
     'celery[redis]>=3.1.20',
     'requests-celery-adapters>=2.0.9',
@@ -21,8 +37,11 @@ extras_require = {
 
 
 setup(name='celery-crossover',
-      version='1.1.9',
+      version='1.1.10',
       description='Celery Crossover aims to make it really easy to execute tasks in another service.',
+      long_description=long_description,
+      long_description_content_type='text/markdown',
+
       author='Daniel Debonzi',
       author_email='debonzi@gmail.com',
       classifiers=[
