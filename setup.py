@@ -21,7 +21,7 @@ with open('README.md') as f:
 
 requires = [
     'celery[redis]>=3.1.20',
-    'requests-celery-adapters>=2.0.9',
+    'requests-celery-adapters>=2.0.13',
     'six>=1.11.0'
             ]
 
@@ -37,7 +37,7 @@ extras_require = {
 
 
 setup(name='celery-crossover',
-      version='1.1.10',
+      version='1.1.11',
       description='Celery Crossover aims to make it really easy to execute tasks in another service.',
       long_description=long_description,
       long_description_content_type='text/markdown',
