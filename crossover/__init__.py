@@ -1,4 +1,5 @@
 # -*- encoding: utf-8 -*-
+import time
 import celery
 from celery.utils.log import get_task_logger
 from kombu import Exchange, Queue
@@ -21,6 +22,9 @@ class CrossoverRouter(celery.Task):
     def run(self, *args, **kwargs):
         app = celery.current_app if celery.VERSION < self.CELERY_4_VERSION else self.app
         task_name = kwargs.pop('task_name')
+
+        # metrics = CrossoverMetrics.load(kwargs)
+
         logger.debug('Got Crossover task: {}'.format(task_name))
         _task = app.tasks.get(task_name)
         if not _task:
@@ -105,7 +109,50 @@ class _Requester(object):
         kwargs['task_name'] = self.remote_task_name
         if 'callback' in kwargs:
             kwargs['callback'] = _build_callback(kwargs['callback'])
+
+        # metrics = CrossoverMetrics()
+        # metrics.set_origin_time()
+        # kwargs['metrics'] = metrics.dump()
+
         requests.post(self.url, json=kwargs)
+
+
+class CrossoverMetrics(object):
+    def __init__(
+        self,
+        origin_time=None,
+        remote_time=None,
+    ):
+        self.origin_time = origin_time
+        self.remote_time = remote_time
+
+    @property
+    def queue_time(self):
+        if not all(self.origin_time, self.remote_time):
+            return None
+        return self.remote_time - self.origin_time
+
+    def set_origin_time(self):
+        self.origin_time = time.time()
+
+    def set_remote_time(self):
+        self.remote_time = time.time()
+
+    @classmethod
+    def load(cls, xover_payload):
+        metrics = xover_payload.pop('metrics', None)
+        if not metrics:
+            return None
+        return cls(
+            origin_time=metrics.get('_origin_time'),
+            remote_time=metrics.get('_remote_time')
+        )
+
+    def dump(self):
+        return dict(
+            _origin_time=self.origin_time,
+            _remote_time=self.remote_time,
+        )
 
 
 class Client(object):

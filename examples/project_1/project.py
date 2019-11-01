@@ -12,6 +12,11 @@ app.config_from_object('examples.project_1.celery_conf')
 crossover.register_router(app)
 
 
+@app.task(queue='project_1')
+def simple():
+    return 'HELLO 1'
+
+
 @app.task(name='plus', queue='project_1')
 @crossover.callback(auto_callback=True)
 def plus(x, y):
