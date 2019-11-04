@@ -29,6 +29,7 @@ extras_require = {
     'test': [
         'pytest',
         'pytest-cov',
+        'tox',
     ],
     'ci': [
         'python-coveralls',

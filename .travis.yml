@@ -18,3 +18,5 @@ deploy:
     python: '3.6'
 after_success:
 - coveralls
+services:
+  - redis-server
