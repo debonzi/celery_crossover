@@ -3,10 +3,12 @@ python:
 - '2.7'
 - '3.5'
 - '3.6'
+- '3.7'
 install:
 - pip install -e .[test,ci]
+- pip install tox-travis
 script:
-- pytest --cov=crossover --cov-report annotate
+- tox
 deploy:
   provider: pypi
   user: debonzi
@@ -15,8 +17,8 @@ deploy:
   on:
     tags: true
     branch: master
-    python: '3.6'
+    python: '3.7'
 after_success:
 - coveralls
 services:
-  - redis-server
+- redis-server
