@@ -1,8 +1,11 @@
 # -*- encoding: utf-8 -*-
+import crossover
+
 from celery import Celery
 from celery.utils.log import get_task_logger
 
-import crossover
+from examples.database import redis
+
 
 logger = get_task_logger(__name__)
 
@@ -37,3 +40,7 @@ def calculate_times(callback_meta, x, y):
     _times = x * y
     logger.info('Multiplication {0} * {1} = {2}'.format(x, y, _times))
     crossover.CallBack(callback_meta)(result=_times)
+
+@crossover.metrics_subscribe()
+def metrics_subscriber(metrics):
+    redis.db.set('dispatch_queue_time', metrics.dispatch_queue_time)

@@ -24,6 +24,10 @@ def test_auto_callback(worker_1, worker_2, p1_client, redis):
     p1_client.plus(x=340, y=210, callback=plus_callback)
     assert redis.get('plus_callback') == b'550'
 
+    dispatch_queue_time = redis.get('dispatch_queue_time')
+    assert dispatch_queue_time is not None
+    assert isinstance(float(dispatch_queue_time), float)
+
 
 def test_callback_meta(worker_1, worker_2, p1_client, redis):
     """
@@ -45,3 +49,7 @@ def test_callback_meta(worker_1, worker_2, p1_client, redis):
 
     p1_client.times(x=340, y=210, callback=times_callback)
     assert redis.get('times_callback') == b'71400'
+
+    dispatch_queue_time = redis.get('dispatch_queue_time')
+    assert dispatch_queue_time is not None
+    assert isinstance(float(dispatch_queue_time), float)
