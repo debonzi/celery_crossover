@@ -12,8 +12,23 @@ CROSSOVER_QUEUE = '_crossover_router_queue.__dispatcher__'
 CROSSOVER_ROUTER_NAME = "__crossover_router_dispatch__"
 
 
+
+class metrics_subscribe(object):
+    subscribers_ = set()
+
+    def __call__(self, wrapped):
+        self.subscribers_.update([wrapped])
+        return wrapped
+
+    @classmethod
+    def call_subscribers(cls, metrics):
+        for s in cls.subscribers_:
+            s(metrics)
+
+
 class TaskNotFoundError(Exception):
     """ Raised when requested task is not found."""
+
 
 class CrossoverRouter(celery.Task):
     CELERY_4_VERSION = celery.version_info_t(4, 0, 0, '', '')
@@ -23,7 +38,9 @@ class CrossoverRouter(celery.Task):
         app = celery.current_app if celery.VERSION < self.CELERY_4_VERSION else self.app
         task_name = kwargs.pop('task_name')
 
-        # metrics = CrossoverMetrics.load(kwargs)
+        metrics = CrossoverMetrics.load(kwargs)
+        metrics.set_remote_time()
+        metrics_subscribe.call_subscribers(metrics)
 
         logger.debug('Got Crossover task: {}'.format(task_name))
         _task = app.tasks.get(task_name)
@@ -110,9 +127,9 @@ class _Requester(object):
         if 'callback' in kwargs:
             kwargs['callback'] = _build_callback(kwargs['callback'])
 
-        # metrics = CrossoverMetrics()
-        # metrics.set_origin_time()
-        # kwargs['metrics'] = metrics.dump()
+        metrics = CrossoverMetrics()
+        metrics.set_origin_time()
+        kwargs['metrics'] = metrics.dump()
 
         requests.post(self.url, json=kwargs)
 
@@ -154,6 +171,10 @@ class CrossoverMetrics(object):
             _remote_time=self.remote_time,
         )
 
+    @property
+    def dispatch_queue_time(self):
+        if all([self.origin_time, self.remote_time]):
+            return self.remote_time - self.origin_time
 
 class Client(object):
     def __init__(self, broker):
