@@ -35,11 +35,12 @@ class CrossoverRouter(celery.Task):
     name = CROSSOVER_ROUTER_NAME
 
     def run(self, *args, **kwargs):
+        metrics = CrossoverMetrics.load(kwargs)
+        metrics.set_remote_time()
+
         app = celery.current_app if celery.VERSION < self.CELERY_4_VERSION else self.app
         task_name = kwargs.pop('task_name')
 
-        metrics = CrossoverMetrics.load(kwargs)
-        metrics.set_remote_time()
         metrics_subscribe.call_subscribers(metrics)
 
         logger.debug('Got Crossover task: {}'.format(task_name))
@@ -123,12 +124,13 @@ class _Requester(object):
         self.remote_task_name = remote_task_name
 
     def __call__(self, *args, **kwargs):
+        metrics = CrossoverMetrics()
+        metrics.set_origin_time()
+
         kwargs['task_name'] = self.remote_task_name
         if 'callback' in kwargs:
             kwargs['callback'] = _build_callback(kwargs['callback'])
 
-        metrics = CrossoverMetrics()
-        metrics.set_origin_time()
         kwargs['metrics'] = metrics.dump()
 
         requests.post(self.url, json=kwargs)

@@ -4,6 +4,7 @@ import signal
 
 from examples.database import redis as redis_
 
+
 class ProjectWorker(object):
     CMD_LINE = ''
 
@@ -11,7 +12,8 @@ class ProjectWorker(object):
         self.sp = subprocess.Popen(self.CMD_LINE)
 
     def stop(self):
-        self.sp.terminate()
+        self.sp.send_signal(signal.SIGINT)
+        self.sp.wait()
 
 
 class Project1Worker(ProjectWorker):
@@ -20,6 +22,10 @@ class Project1Worker(ProjectWorker):
 
 class Project2Worker(ProjectWorker):
     CMD_LINE = 'celery worker -A examples.project_2.project.app -l INFO'.split(' ')
+
+
+def pytest_configure():
+    redis_.db.flushall()
 
 
 @pytest.fixture(scope='session')
