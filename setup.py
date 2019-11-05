@@ -21,7 +21,7 @@ with open('README.md') as f:
 
 requires = [
     'celery[redis]>=3.1.20',
-    'requests-celery-adapters>=2.0.13',
+    'requests-celery-adapters>=2.0.14',
     'six>=1.11.0'
             ]
 
