@@ -124,7 +124,7 @@ class _Requester(object):
         self.remote_task_name = remote_task_name
 
     def __call__(self, *args, **kwargs):
-        metrics = CrossoverMetrics()
+        metrics = CrossoverMetrics(task_name=self.remote_task_name)
         metrics.set_origin_time()
 
         kwargs['task_name'] = self.remote_task_name
@@ -139,9 +139,11 @@ class _Requester(object):
 class CrossoverMetrics(object):
     def __init__(
         self,
+        task_name=None,
         origin_time=None,
         remote_time=None,
     ):
+        self.task_name = task_name
         self.origin_time = origin_time
         self.remote_time = remote_time
 
@@ -163,12 +165,14 @@ class CrossoverMetrics(object):
         if not metrics:
             return None
         return cls(
+            task_name=metrics.get('_task_name'),
             origin_time=metrics.get('_origin_time'),
             remote_time=metrics.get('_remote_time')
         )
 
     def dump(self):
         return dict(
+            _task_name=self.task_name,
             _origin_time=self.origin_time,
             _remote_time=self.remote_time,
         )
