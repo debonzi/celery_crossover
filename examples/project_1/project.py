@@ -44,3 +44,4 @@ def calculate_times(callback_meta, x, y):
 @crossover.metrics_subscribe()
 def metrics_subscriber(metrics):
     redis.db.set('dispatch_queue_time', metrics.dispatch_queue_time)
+    redis.db.set('task_name', metrics.task_name)

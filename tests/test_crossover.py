@@ -27,6 +27,7 @@ def test_auto_callback(worker_1, worker_2, p1_client, redis):
     dispatch_queue_time = redis.get('dispatch_queue_time')
     assert dispatch_queue_time is not None
     assert isinstance(float(dispatch_queue_time), float)
+    assert redis.get('task_name') == b'plus'
 
 
 def test_callback_meta(worker_1, worker_2, p1_client, redis):
@@ -53,3 +54,4 @@ def test_callback_meta(worker_1, worker_2, p1_client, redis):
     dispatch_queue_time = redis.get('dispatch_queue_time')
     assert dispatch_queue_time is not None
     assert isinstance(float(dispatch_queue_time), float)
+    assert redis.get('task_name') == b'times'
