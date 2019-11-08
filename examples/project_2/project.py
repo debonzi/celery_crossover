@@ -28,3 +28,9 @@ def plus_callback(result):
 def times_callback(result):
     logger.info('Got Multiplication callback = {0}'.format(result))
     redis.db.set('times_callback', result)
+
+
+@crossover.metrics_subscribe()
+def metrics_subscriber(metrics):
+    redis.db.set('callback_queue_time', metrics.dispatch_queue_time)
+    redis.db.set('callback_task_name', metrics.task_name)

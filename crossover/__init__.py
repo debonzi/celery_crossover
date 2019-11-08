@@ -36,12 +36,12 @@ class CrossoverRouter(celery.Task):
 
     def run(self, *args, **kwargs):
         metrics = CrossoverMetrics.load(kwargs)
-        metrics.set_remote_time()
+        if metrics:
+            metrics.set_remote_time()
+            metrics_subscribe.call_subscribers(metrics)
 
         app = celery.current_app if celery.VERSION < self.CELERY_4_VERSION else self.app
         task_name = kwargs.pop('task_name')
-
-        metrics_subscribe.call_subscribers(metrics)
 
         logger.debug('Got Crossover task: {}'.format(task_name))
         _task = app.tasks.get(task_name)
@@ -73,7 +73,7 @@ def register_router(celery_app):
         _register_celery_4(celery_app=celery_app, queue=queue)
 
 
-def _build_callback(task):
+def _build_callback(task, bind_metrics):
     if not hasattr(task.app.conf, 'broker_url'):  # Celery 3
         broker_url = task.app.conf.BROKER_URL
     else:                                         # Celery 4
@@ -81,7 +81,8 @@ def _build_callback(task):
 
     return {
         'broker': broker_url,
-        'task': task.name
+        'task': task.name,
+        'bind_metrics': bind_metrics,
     }
 
 
@@ -111,10 +112,15 @@ class CallBack(object):
     def __init__(self, callback_data):
         self.requester = None
         if callback_data:
-            self.requester = _Requester(callback_data.get('broker'), callback_data.get('task'))
+            self.requester = _Requester(
+                callback_data.get('broker'),
+                callback_data.get('task'),
+            )
+        self.bind_metrics = callback_data.get('bind_metrics', False)
 
     def __call__(self, *args, **kwargs):
         if self.requester:
+            kwargs.update({'bind_metrics': self.bind_metrics})
             self.requester(*args, **kwargs)
 
 
@@ -124,14 +130,19 @@ class _Requester(object):
         self.remote_task_name = remote_task_name
 
     def __call__(self, *args, **kwargs):
-        metrics = CrossoverMetrics(task_name=self.remote_task_name)
-        metrics.set_origin_time()
+        bind_metrics = kwargs.pop('bind_metrics', False)
 
         kwargs['task_name'] = self.remote_task_name
         if 'callback' in kwargs:
-            kwargs['callback'] = _build_callback(kwargs['callback'])
+            kwargs['callback'] = _build_callback(
+                task=kwargs['callback'],
+                bind_metrics=bind_metrics,
+            )
 
-        kwargs['metrics'] = metrics.dump()
+        if bind_metrics:
+            metrics = CrossoverMetrics(task_name=self.remote_task_name)
+            metrics.set_origin_time()
+            kwargs['metrics'] = metrics.dump()
 
         requests.post(self.url, json=kwargs)
 
