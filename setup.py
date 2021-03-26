@@ -45,7 +45,7 @@ extras_require.update(
 
 setup(
     name="celery-crossover",
-    version="1.1.13",
+    version="1.1.14",
     description="Celery Crossover aims to make it really easy to execute tasks in another service.",
     long_description=long_description,
     long_description_content_type="text/markdown",
