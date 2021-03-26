@@ -4,7 +4,11 @@ import signal
 
 from redis import Redis
 
-from examples.database import test_results as test_results_
+from examples.database import (
+    p1_broker as p1_broker_,
+    p2_broker as p2_broker_,
+    test_results as test_results_,
+)
 
 
 class ProjectWorker(object):
@@ -30,7 +34,7 @@ def pytest_configure():
     Redis().flushall()
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture(scope="session", autouse=True)
 def worker_1():
     pw = Project1Worker()
     pw.start()
@@ -38,12 +42,22 @@ def worker_1():
     pw.stop()
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture(scope="session", autouse=True)
 def worker_2():
     pw = Project2Worker()
     pw.start()
     yield
     pw.stop()
+
+
+@pytest.fixture(scope="session")
+def p1_broker():
+    yield p1_broker_
+
+
+@pytest.fixture(scope="session")
+def p2_broker():
+    yield p2_broker_
 
 
 @pytest.fixture(scope="function")

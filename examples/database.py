@@ -28,3 +28,5 @@ class TestResultsDatabase(object):
 
 
 test_results = TestResultsDatabase()
+p1_broker = Redis(db=0)
+p2_broker = Redis(db=1)

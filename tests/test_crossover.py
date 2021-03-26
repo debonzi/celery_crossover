@@ -1,16 +1,16 @@
-def test_worker_1(worker_1):
+def test_worker_1():
     from examples.project_1.project import simple
 
     assert simple.delay().get(timeout=10) == "HELLO 1"
 
 
-def test_worker_2(worker_2):
+def test_worker_2():
     from examples.project_2.project import simple
 
     assert simple.delay().get(timeout=10) == "HELLO 2"
 
 
-def test_auto_callback(worker_1, worker_2, p1_client, test_results):
+def test_auto_callback(p1_client, p1_broker, test_results):
     """
     P2 call P1 `plus` task with P2 `plus_callback` as P1 `plus` callback.
     p1 `plus` has @crossover.callback(auto_callback=True) decorator.
@@ -26,8 +26,12 @@ def test_auto_callback(worker_1, worker_2, p1_client, test_results):
     p1_client.plus(x=340, y=210, callback=plus_callback)
     assert test_results.get("plus_callback") == b"550"
 
+    # Make sure there is no unacked tasks
+    assert 'unacked'.encode() not in p1_broker.keys()
 
-def test_auto_callback_metrics(worker_1, worker_2, p1_client, test_results):
+
+
+def test_auto_callback_metrics(p1_client, p1_broker, test_results):
     """
     P2 call P1 `plus` task with P2 `plus_callback` as P1 `plus` callback.
     p1 `plus` has @crossover.callback(auto_callback=True) decorator.
@@ -53,8 +57,11 @@ def test_auto_callback_metrics(worker_1, worker_2, p1_client, test_results):
     assert isinstance(float(callback_queue_time), float)
     assert test_results.get("callback_task_name") == b"plus_callback"
 
+    # Make sure there is no unacked tasks
+    assert 'unacked'.encode() not in p1_broker.keys()
 
-def test_callback_meta(worker_1, worker_2, p1_client, test_results):
+
+def test_callback_meta(p1_client, p1_broker, test_results):
     """
     P2 call P1 `times` task with P2 `times_callback` as P1 `times` callback.
     P1 `times` has @crossover.callback(bind_callback_meta=True) decorator and
@@ -75,8 +82,11 @@ def test_callback_meta(worker_1, worker_2, p1_client, test_results):
     p1_client.times(x=340, y=210, callback=times_callback, bind_metrics=True)
     assert test_results.get("times_callback") == b"71400"
 
+    # Make sure there is no unacked tasks
+    assert 'unacked'.encode() not in p1_broker.keys()
 
-def test_callback_meta_metrics(worker_1, worker_2, p1_client, test_results):
+
+def test_callback_meta_metrics(p1_client, p1_broker, test_results):
     """
     P2 call P1 `times` task with P2 `times_callback` as P1 `times` callback.
     P1 `times` has @crossover.callback(bind_callback_meta=True) decorator and
@@ -106,3 +116,6 @@ def test_callback_meta_metrics(worker_1, worker_2, p1_client, test_results):
     assert callback_queue_time is not None
     assert isinstance(float(callback_queue_time), float)
     assert test_results.get("callback_task_name") == b"times_callback"
+
+    # Make sure there is no unacked tasks
+    assert 'unacked'.encode() not in p1_broker.keys()
