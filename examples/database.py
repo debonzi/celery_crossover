@@ -12,7 +12,7 @@ class TestResultsDatabase(object):
 
     def get(self, key, timeout=10):
         tick = 0.1
-        steps = int(timeout/tick)
+        steps = int(timeout / tick)
         for _ in range(steps):
             value = self._db.get(key)
             if value:

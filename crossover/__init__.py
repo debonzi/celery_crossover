@@ -5,12 +5,12 @@ from celery.utils.log import get_task_logger
 from kombu import Exchange, Queue
 
 from crossover.xrequests import requests
+
 logger = get_task_logger(__name__)
 
 
-CROSSOVER_QUEUE = '_crossover_router_queue.__dispatcher__'
+CROSSOVER_QUEUE = "_crossover_router_queue.__dispatcher__"
 CROSSOVER_ROUTER_NAME = "__crossover_router_dispatch__"
-
 
 
 class metrics_subscribe(object):
@@ -31,7 +31,7 @@ class TaskNotFoundError(Exception):
 
 
 class CrossoverRouter(celery.Task):
-    CELERY_4_VERSION = celery.version_info_t(4, 0, 0, '', '')
+    CELERY_4_VERSION = celery.version_info_t(4, 0, 0, "", "")
     name = CROSSOVER_ROUTER_NAME
 
     def run(self, *args, **kwargs):
@@ -41,9 +41,9 @@ class CrossoverRouter(celery.Task):
             metrics_subscribe.call_subscribers(metrics)
 
         app = celery.current_app if celery.VERSION < self.CELERY_4_VERSION else self.app
-        task_name = kwargs.pop('task_name')
+        task_name = kwargs.pop("task_name")
 
-        logger.debug('Got Crossover task: {}'.format(task_name))
+        logger.debug("Got Crossover task: {}".format(task_name))
         _task = app.tasks.get(task_name)
         if not _task:
             raise TaskNotFoundError('Task "{0}" not found!'.format(task_name))
@@ -66,31 +66,33 @@ def _register_celery_4(celery_app, queue):
 
 def register_router(celery_app):
     celery_app.tasks.register(CrossoverRouter)
-    queue = Queue(CROSSOVER_QUEUE, Exchange(CROSSOVER_QUEUE), routing_key=CROSSOVER_QUEUE)
-    if not hasattr(celery_app.conf, 'task_queues'):  # Celery 3
+    queue = Queue(
+        CROSSOVER_QUEUE, Exchange(CROSSOVER_QUEUE), routing_key=CROSSOVER_QUEUE
+    )
+    if not hasattr(celery_app.conf, "task_queues"):  # Celery 3
         _register_celery_3(celery_app=celery_app, queue=queue)
-    else:                                            # Celery 4
+    else:  # Celery 4
         _register_celery_4(celery_app=celery_app, queue=queue)
 
 
 def _build_callback(task, bind_metrics):
-    if not hasattr(task.app.conf, 'broker_url'):  # Celery 3
+    if not hasattr(task.app.conf, "broker_url"):  # Celery 3
         broker_url = task.app.conf.BROKER_URL
-    else:                                         # Celery 4
+    else:  # Celery 4
         broker_url = task.app.conf.broker_url
 
     return {
-        'broker': broker_url,
-        'task': task.name,
-        'bind_metrics': bind_metrics,
+        "broker": broker_url,
+        "task": task.name,
+        "bind_metrics": bind_metrics,
     }
 
 
 def callback(auto_callback=False, bind_callback_meta=False):
     def _executor(func):
         def wrapped(*args, **kwargs):
-            if 'callback' in kwargs:
-                _callback = kwargs.pop('callback')
+            if "callback" in kwargs:
+                _callback = kwargs.pop("callback")
                 if auto_callback:
                     CallBack(_callback)(result=func(*args, **kwargs))
                 elif bind_callback_meta:
@@ -104,7 +106,9 @@ def callback(auto_callback=False, bind_callback_meta=False):
                 func(*args, **kwargs)
             else:
                 func(args, **kwargs)
+
         return wrapped
+
     return _executor
 
 
@@ -113,36 +117,42 @@ class CallBack(object):
         self.requester = None
         if callback_data:
             self.requester = _Requester(
-                callback_data.get('broker'),
-                callback_data.get('task'),
+                callback_data.get("broker"),
+                callback_data.get("task"),
             )
-        self.bind_metrics = callback_data.get('bind_metrics', False)
+        self.bind_metrics = callback_data.get("bind_metrics", False)
 
     def __call__(self, *args, **kwargs):
         if self.requester:
-            kwargs.update({'bind_metrics': self.bind_metrics})
+            kwargs.update({"bind_metrics": self.bind_metrics})
             self.requester(*args, **kwargs)
 
 
 class _Requester(object):
-    def __init__(self, broker, remote_task_name, task=CROSSOVER_ROUTER_NAME, queue=CROSSOVER_QUEUE):
+    def __init__(
+        self,
+        broker,
+        remote_task_name,
+        task=CROSSOVER_ROUTER_NAME,
+        queue=CROSSOVER_QUEUE,
+    ):
         self.url = "{0}/{1}#{2}".format(broker, task, queue)
         self.remote_task_name = remote_task_name
 
     def __call__(self, *args, **kwargs):
-        bind_metrics = kwargs.pop('bind_metrics', False)
+        bind_metrics = kwargs.pop("bind_metrics", False)
 
-        kwargs['task_name'] = self.remote_task_name
-        if 'callback' in kwargs:
-            kwargs['callback'] = _build_callback(
-                task=kwargs['callback'],
+        kwargs["task_name"] = self.remote_task_name
+        if "callback" in kwargs:
+            kwargs["callback"] = _build_callback(
+                task=kwargs["callback"],
                 bind_metrics=bind_metrics,
             )
 
         if bind_metrics:
             metrics = CrossoverMetrics(task_name=self.remote_task_name)
             metrics.set_origin_time()
-            kwargs['metrics'] = metrics.dump()
+            kwargs["metrics"] = metrics.dump()
 
         requests.post(self.url, json=kwargs)
 
@@ -172,13 +182,13 @@ class CrossoverMetrics(object):
 
     @classmethod
     def load(cls, xover_payload):
-        metrics = xover_payload.pop('metrics', None)
+        metrics = xover_payload.pop("metrics", None)
         if not metrics:
             return None
         return cls(
-            task_name=metrics.get('_task_name'),
-            origin_time=metrics.get('_origin_time'),
-            remote_time=metrics.get('_remote_time')
+            task_name=metrics.get("_task_name"),
+            origin_time=metrics.get("_origin_time"),
+            remote_time=metrics.get("_remote_time"),
         )
 
     def dump(self):
@@ -192,6 +202,7 @@ class CrossoverMetrics(object):
     def dispatch_queue_time(self):
         if all([self.origin_time, self.remote_time]):
             return self.remote_time - self.origin_time
+
 
 class Client(object):
     def __init__(self, broker):

@@ -1,11 +1,13 @@
 def test_worker_1(worker_1):
     from examples.project_1.project import simple
-    assert simple.delay().get(timeout=10) == 'HELLO 1'
+
+    assert simple.delay().get(timeout=10) == "HELLO 1"
 
 
 def test_worker_2(worker_2):
     from examples.project_2.project import simple
-    assert simple.delay().get(timeout=10) == 'HELLO 2'
+
+    assert simple.delay().get(timeout=10) == "HELLO 2"
 
 
 def test_auto_callback(worker_1, worker_2, p1_client, test_results):
@@ -22,7 +24,7 @@ def test_auto_callback(worker_1, worker_2, p1_client, test_results):
     from examples.project_2.project import plus_callback
 
     p1_client.plus(x=340, y=210, callback=plus_callback)
-    assert test_results.get('plus_callback') == b'550'
+    assert test_results.get("plus_callback") == b"550"
 
 
 def test_auto_callback_metrics(worker_1, worker_2, p1_client, test_results):
@@ -39,17 +41,17 @@ def test_auto_callback_metrics(worker_1, worker_2, p1_client, test_results):
     from examples.project_2.project import plus_callback
 
     p1_client.plus(x=340, y=210, callback=plus_callback, bind_metrics=True)
-    assert test_results.get('plus_callback') == b'550'
+    assert test_results.get("plus_callback") == b"550"
 
-    dispatch_queue_time = test_results.get('dispatch_queue_time')
+    dispatch_queue_time = test_results.get("dispatch_queue_time")
     assert dispatch_queue_time is not None
     assert isinstance(float(dispatch_queue_time), float)
-    assert test_results.get('task_name') == b'plus'
+    assert test_results.get("task_name") == b"plus"
 
-    callback_queue_time = test_results.get('callback_queue_time')
+    callback_queue_time = test_results.get("callback_queue_time")
     assert callback_queue_time is not None
     assert isinstance(float(callback_queue_time), float)
-    assert test_results.get('callback_task_name') == b'plus_callback'
+    assert test_results.get("callback_task_name") == b"plus_callback"
 
 
 def test_callback_meta(worker_1, worker_2, p1_client, test_results):
@@ -71,7 +73,7 @@ def test_callback_meta(worker_1, worker_2, p1_client, test_results):
     from examples.project_2.project import times_callback
 
     p1_client.times(x=340, y=210, callback=times_callback, bind_metrics=True)
-    assert test_results.get('times_callback') == b'71400'
+    assert test_results.get("times_callback") == b"71400"
 
 
 def test_callback_meta_metrics(worker_1, worker_2, p1_client, test_results):
@@ -93,14 +95,14 @@ def test_callback_meta_metrics(worker_1, worker_2, p1_client, test_results):
     from examples.project_2.project import times_callback
 
     p1_client.times(x=340, y=210, callback=times_callback, bind_metrics=True)
-    assert test_results.get('times_callback') == b'71400'
+    assert test_results.get("times_callback") == b"71400"
 
-    dispatch_queue_time = test_results.get('dispatch_queue_time')
+    dispatch_queue_time = test_results.get("dispatch_queue_time")
     assert dispatch_queue_time is not None
     assert isinstance(float(dispatch_queue_time), float)
-    assert test_results.get('task_name') == b'times'
+    assert test_results.get("task_name") == b"times"
 
-    callback_queue_time = test_results.get('callback_queue_time')
+    callback_queue_time = test_results.get("callback_queue_time")
     assert callback_queue_time is not None
     assert isinstance(float(callback_queue_time), float)
-    assert test_results.get('callback_task_name') == b'times_callback'
+    assert test_results.get("callback_task_name") == b"times_callback"
