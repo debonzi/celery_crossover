@@ -65,7 +65,9 @@ def _register_celery_4(celery_app, queue):
 
 
 def register_router(celery_app):
+    CrossoverRouter.bind(celery_app)
     celery_app.tasks.register(CrossoverRouter)
+
     queue = Queue(
         CROSSOVER_QUEUE, Exchange(CROSSOVER_QUEUE), routing_key=CROSSOVER_QUEUE
     )
