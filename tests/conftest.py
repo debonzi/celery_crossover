@@ -2,11 +2,13 @@ import pytest
 import subprocess
 import signal
 
-from examples.database import redis as redis_
+from redis import Redis
+
+from examples.database import test_results as test_results_
 
 
 class ProjectWorker(object):
-    CMD_LINE = ''
+    CMD_LINE = ""
 
     def start(self):
         self.sp = subprocess.Popen(self.CMD_LINE)
@@ -17,18 +19,18 @@ class ProjectWorker(object):
 
 
 class Project1Worker(ProjectWorker):
-    CMD_LINE = 'celery worker -A examples.project_1.project.app -l INFO'.split(' ')
+    CMD_LINE = "celery worker -A examples.project_1.project.app -l INFO".split(" ")
 
 
 class Project2Worker(ProjectWorker):
-    CMD_LINE = 'celery worker -A examples.project_2.project.app -l INFO'.split(' ')
+    CMD_LINE = "celery worker -A examples.project_2.project.app -l INFO".split(" ")
 
 
 def pytest_configure():
-    redis_.db.flushall()
+    Redis().flushall()
 
 
-@pytest.fixture(scope='session')
+@pytest.fixture(scope="session")
 def worker_1():
     pw = Project1Worker()
     pw.start()
@@ -36,7 +38,7 @@ def worker_1():
     pw.stop()
 
 
-@pytest.fixture(scope='session')
+@pytest.fixture(scope="session")
 def worker_2():
     pw = Project2Worker()
     pw.start()
@@ -44,13 +46,13 @@ def worker_2():
     pw.stop()
 
 
-@pytest.fixture(scope='function')
-def redis():
-    yield redis_
-    redis_.db.flushdb()
+@pytest.fixture(scope="function")
+def test_results():
+    yield test_results_
+    test_results_.clear_results()
 
 
-@pytest.fixture(scope='session')
+@pytest.fixture(scope="session")
 def p1_client():
     from crossover import Client
 

@@ -6,19 +6,25 @@ class WorkerResultTimeout(Exception):
     """Result Timeout"""
 
 
-class RedisTestDatabase(object):
+class TestResultsDatabase(object):
     def __init__(self):
-        self.db = Redis(db=8)
+        self._db = Redis(db=8)
 
     def get(self, key, timeout=10):
         tick = 0.1
         steps = int(timeout/tick)
         for _ in range(steps):
-            value = self.db.get(key)
+            value = self._db.get(key)
             if value:
                 return value
             time.sleep(0.1)
         raise WorkerResultTimeout
 
+    def set(self, key, value):
+        self._db.set(key, value)
 
-redis = RedisTestDatabase()
+    def clear_results(self):
+        self._db.flushdb()
+
+
+test_results = TestResultsDatabase()

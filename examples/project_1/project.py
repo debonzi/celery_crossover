@@ -4,7 +4,7 @@ import crossover
 from celery import Celery
 from celery.utils.log import get_task_logger
 
-from examples.database import redis
+from examples.database import test_results
 
 
 logger = get_task_logger(__name__)
@@ -43,5 +43,5 @@ def calculate_times(callback_meta, x, y):
 
 @crossover.metrics_subscribe()
 def metrics_subscriber(metrics):
-    redis.db.set('dispatch_queue_time', metrics.dispatch_queue_time)
-    redis.db.set('task_name', metrics.task_name)
+    test_results.set('dispatch_queue_time', metrics.dispatch_queue_time)
+    test_results.set('task_name', metrics.task_name)
