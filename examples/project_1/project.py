@@ -15,8 +15,12 @@ app.config_from_object("examples.project_1.celery_conf")
 crossover.register_router(app)
 
 
-@app.task(queue="project_1")
-def simple():
+@app.task(bind=True, queue="project_1")
+@crossover.callback(auto_callback=True)
+# Add crossover.callback just to ensure it
+# can still be called as a local task.
+def simple(self):
+    assert self == simple
     return "HELLO 1"
 
 
@@ -28,9 +32,9 @@ def plus(x, y):
     return _add
 
 
-@app.task(name="times", queue="project_1")
+@app.task(bind=True, name="times", queue="project_1")
 @crossover.callback(bind_callback_meta=True)
-def times(callback_meta, x, y):
+def times(self, callback_meta, x, y):
     logger.info("Execution actual multiplication task.")
     calculate_times.delay(callback_meta, x, y)
 

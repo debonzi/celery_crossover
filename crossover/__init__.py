@@ -96,18 +96,17 @@ def callback(auto_callback=False, bind_callback_meta=False):
             if "callback" in kwargs:
                 _callback = kwargs.pop("callback")
                 if auto_callback:
-                    CallBack(_callback)(result=func(*args, **kwargs))
+                    return CallBack(_callback)(result=func(*args, **kwargs))
                 elif bind_callback_meta:
                     kwargs.update({"callback_meta": _callback})
-                    func(*args, **kwargs)
+                    return func(*args, **kwargs)
                 else:
-                    func(*args, **kwargs)
-                return
+                    return func(*args, **kwargs)
             if bind_callback_meta:  # and not 'callback' in kwargs
                 kwargs.update({"callback_meta": None})
-                func(*args, **kwargs)
+                return func(*args, **kwargs)
             else:
-                func(args, **kwargs)
+                return func(*args, **kwargs)
 
         return wrapped
 
