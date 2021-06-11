@@ -19,11 +19,10 @@ jobs:
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
-          
+
     strategy:
       matrix:
-        # python: [2.7, 3.5, 3.6, 3.7, 3.8, 3.9]`
-        python: [3.7,]
+        python: [2.7, 3.5, 3.6, 3.7, 3.8, 3.9]
 
     steps:
       - uses: actions/checkout@v2
@@ -32,11 +31,10 @@ jobs:
         with:
           python-version: ${{ matrix.python }}
       - name: Install Tox and any other packages
-        run: pip install tox
+        run: pip install tox tox-gh-actions
       - name: Run Tox
-        # Run tox using the version of Python in `PATH`
-        run: tox -e py
-        
+        run: tox
+
         env:
           # The hostname used to communicate with the Redis service container
           REDIS_HOST: localhost
