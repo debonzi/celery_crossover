@@ -2,6 +2,8 @@ name: Celery Crossover Release Pypi
 on:
   workflow_run:
     workflows: ["Celery Crossover Tests"]
+    types:
+      - completed
     tags:
     # Run on tags
 
