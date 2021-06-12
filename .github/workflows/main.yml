@@ -31,8 +31,6 @@ jobs:
           python-version: ${{ matrix.python }}
       - name: Install Tox and any other packages
         run: pip install tox tox-gh-actions
-      - name: Setup upterm session
-        uses: lhotari/action-upterm@v1
       - name: Run Tox
         run: tox
 
