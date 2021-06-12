@@ -1,19 +1,15 @@
-name: Celery Crossover CI
+name: Celery Crossover Tests
 
 on: [push]
 
 jobs:
-  build:
-
+  full-test:
     runs-on: ubuntu-latest
     services:
-      # Label used to access the service container
       redis:
-        # Docker Hub image
         image: redis
         ports:
         - 6379:6379
-        # Set health checks to wait until redis has started
         options: >-
           --health-cmd "redis-cli ping"
           --health-interval 10s
@@ -35,7 +31,5 @@ jobs:
         run: tox
 
         env:
-          # The hostname used to communicate with the Redis service container
           REDIS_HOST: localhost
-          # The default Redis port
           REDIS_PORT: 6379
